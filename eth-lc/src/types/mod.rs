@@ -4,7 +4,7 @@ use ssz_rs::prelude::*;
 use superstruct::superstruct;
 
 use self::primitives::{ByteList, ByteVector, U64};
-use self::utils::{header_deserialize, superstruct_ssz, u256_deserialize};
+use self::utils::{superstruct_ssz, u256_deserialize};
 
 pub mod primitives;
 mod utils;
@@ -15,6 +15,12 @@ pub type LogsBloom = ByteVector<256>;
 pub type BLSPubKey = ByteVector<48>;
 pub type SignatureBytes = ByteVector<96>;
 pub type Transaction = ByteList<1073741824>;
+
+
+
+
+
+
 
 #[derive(serde::Deserialize, Debug, Default, SimpleSerialize, Clone)]
 pub struct BeaconBlock {
@@ -212,7 +218,6 @@ pub struct Eth1Data {
 
 #[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
 pub struct Bootstrap {
-    #[serde(deserialize_with = "header_deserialize")]
     pub header: Header,
     pub current_sync_committee: SyncCommittee,
     pub current_sync_committee_branch: Vector<Bytes32, 5>,
@@ -220,11 +225,9 @@ pub struct Bootstrap {
 
 #[derive(serde::Deserialize, Debug, Clone)]
 pub struct Update {
-    #[serde(deserialize_with = "header_deserialize")]
     pub attested_header: Header,
     pub next_sync_committee: SyncCommittee,
     pub next_sync_committee_branch: Vec<Bytes32>,
-    #[serde(deserialize_with = "header_deserialize")]
     pub finalized_header: Header,
     pub finality_branch: Vec<Bytes32>,
     pub sync_aggregate: SyncAggregate,
@@ -233,9 +236,7 @@ pub struct Update {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct FinalityUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
     pub attested_header: Header,
-    #[serde(deserialize_with = "header_deserialize")]
     pub finalized_header: Header,
     pub finality_branch: Vec<Bytes32>,
     pub sync_aggregate: SyncAggregate,
@@ -244,7 +245,6 @@ pub struct FinalityUpdate {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct OptimisticUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
     pub attested_header: Header,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
@@ -273,7 +273,6 @@ pub struct SyncAggregate {
 
 #[derive(serde::Deserialize, Clone)]
 pub struct GenericUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
     pub attested_header: Header,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
