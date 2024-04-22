@@ -7,6 +7,7 @@ use eth_lc::{
 use methods::{GUEST_ELF, GUEST_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv};
 use ssz_rs::prelude::*;
+use tracing_subscriber::fmt::init;
 
 #[derive(serde::Deserialize)]
 pub struct TestCase {
@@ -15,19 +16,40 @@ pub struct TestCase {
     pub updates: Vec<GenericUpdate>,
 }
 
+#[derive(Debug, SimpleSerialize, Default)]
+pub struct Foo {
+    pub bar: u32,
+
+    pub baz: u64,
+}
+    
 fn main() {
     // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
         .init();
 
+    //try with foo first
+
+    let foo = Foo {
+        bar: 42,
+        baz: 69,
+    };
+    let encoding = serialize(&foo).unwrap();
+    println!("encoding foo {:?}", encoding);
+    let recovered_value: Foo = deserialize(&encoding).expect("can deserialize");
+    println!("recovered foo {:?}", recovered_value);
+
     let contents = include_str!("../../test-data/bootstrap.json");
     let test_cases: Vec<TestCase> = serde_json::from_str(&contents).unwrap();
-    let init_bootstrap = test_cases[0].init.clone();
-    let byte: Bytes32 = Bytes32::default();
-    let lc_store = LightClientStore::init( init_bootstrap, byte);
-    let encoding = serialize(&lc_store).unwrap();
-    let recovered_value: LightClientStore = deserialize(&encoding).expect("can deserialize");
+    let mut init_bootstrap = test_cases[0].init.clone();
+    // let byte: Bytes32 = Bytes32::default();
+    // let lc_store = LightClientStore::init( init_bootstrap, byte);
+
+    let encoding: Vec<u8> = serialize(&init_bootstrap).unwrap();
+    // println!("encoding {:?}", hex::encode(encoding.clone()) );
+    println!("hash_tree_root {:?}", &init_bootstrap.hash_tree_root());
+    let recovered_value: Bootstrap = deserialize(&encoding).expect("can deserialize");
 
     // An executor environment describes the configurations for the zkVM
     // including program inputs.

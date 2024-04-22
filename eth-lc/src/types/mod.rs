@@ -210,12 +210,12 @@ pub struct Eth1Data {
     block_hash: Bytes32,
 }
 
-#[derive(serde::Deserialize, Debug, Clone)]
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
 pub struct Bootstrap {
     #[serde(deserialize_with = "header_deserialize")]
     pub header: Header,
     pub current_sync_committee: SyncCommittee,
-    pub current_sync_committee_branch: Vec<Bytes32>,
+    pub current_sync_committee_branch: Vector<Bytes32, 5>,
 }
 
 #[derive(serde::Deserialize, Debug, Clone)]
