@@ -24,14 +24,14 @@ where
     })
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 #[serde(untagged)]
 enum LightClientHeader {
     Unwrapped(Header),
     Wrapped(Beacon),
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 struct Beacon {
     beacon: Header,
 }

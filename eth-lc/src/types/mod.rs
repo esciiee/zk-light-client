@@ -210,7 +210,7 @@ pub struct Eth1Data {
     block_hash: Bytes32,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, Clone)]
 pub struct Bootstrap {
     #[serde(deserialize_with = "header_deserialize")]
     pub header: Header,
@@ -271,10 +271,12 @@ pub struct SyncAggregate {
     pub sync_committee_signature: SignatureBytes,
 }
 
+#[derive(serde::Deserialize, Clone)]
 pub struct GenericUpdate {
+    #[serde(deserialize_with = "header_deserialize")]
     pub attested_header: Header,
     pub sync_aggregate: SyncAggregate,
-    pub signature_slot: u64,
+    pub signature_slot: U64,
     pub next_sync_committee: Option<SyncCommittee>,
     pub next_sync_committee_branch: Option<Vec<Bytes32>>,
     pub finalized_header: Option<Header>,
