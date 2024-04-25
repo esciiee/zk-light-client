@@ -6,10 +6,10 @@ pub mod types;
 
 #[derive(Debug, Default, SimpleSerialize)]
 pub struct LightClientStore {
-    pub finalized_header: Header,
+    pub finalized_header: LightClientHeader,
     pub current_sync_committee: SyncCommittee,
     pub next_sync_committee: Option<SyncCommittee>,
-    pub optimistic_header: Header,
+    pub optimistic_header: LightClientHeader,
     pub previous_max_active_participants: u64,
     pub current_max_active_participants: u64,
 }

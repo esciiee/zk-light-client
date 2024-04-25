@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use ssz_rs::prelude::*;
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, SimpleSerialize)]
 pub struct ByteVector<const N: usize> {
     inner: Vector<u8, N>,
 }
@@ -41,40 +41,40 @@ impl<const N: usize> TryFrom<&[u8]> for ByteVector<N> {
     }
 }
 
-impl<const N: usize> ssz_rs::Merkleized for ByteVector<N> {
-    fn hash_tree_root(&mut self) -> std::result::Result<Node, MerkleizationError> {
-        self.inner.hash_tree_root()
-    }
-}
+// impl<const N: usize> ssz_rs::Merkleized for ByteVector<N> {
+//     fn hash_tree_root(&mut self) -> std::result::Result<Node, MerkleizationError> {
+//         self.inner.hash_tree_root()
+//     }
+// }
 
-impl<const N: usize> ssz_rs::Sized for ByteVector<N> {
-    fn size_hint() -> usize {
-        0
-    }
+// impl<const N: usize> ssz_rs::Sized for ByteVector<N> {
+//     fn size_hint() -> usize {
+//         0
+//     }
 
-    fn is_variable_size() -> bool {
-        false
-    }
-}
+//     fn is_variable_size() -> bool {
+//         false
+//     }
+// }
 
-impl<const N: usize> ssz_rs::Serialize for ByteVector<N> {
-    fn serialize(&self, buffer: &mut Vec<u8>) -> std::result::Result<usize, SerializeError> {
-        self.inner.serialize(buffer)
-    }
-}
+// impl<const N: usize> ssz_rs::Serialize for ByteVector<N> {
+//     fn serialize(&self, buffer: &mut Vec<u8>) -> std::result::Result<usize, SerializeError> {
+//         self.inner.serialize(buffer)
+//     }
+// }
 
-impl<const N: usize> ssz_rs::Deserialize for ByteVector<N> {
-    fn deserialize(encoding: &[u8]) -> std::result::Result<Self, DeserializeError>
-    where
-        Self: std::marker::Sized,
-    {
-        Ok(Self {
-            inner: Vector::deserialize(encoding)?,
-        })
-    }
-}
+// impl<const N: usize> ssz_rs::Deserialize for ByteVector<N> {
+//     fn deserialize(encoding: &[u8]) -> std::result::Result<Self, DeserializeError>
+//     where
+//         Self: std::marker::Sized,
+//     {
+//         Ok(Self {
+//             inner: Vector::deserialize(encoding)?,
+//         })
+//     }
+// }
 
-impl<const N: usize> ssz_rs::SimpleSerialize for ByteVector<N> {}
+// impl<const N: usize> ssz_rs::SimpleSerialize for ByteVector<N> {}
 
 impl<'de, const N: usize> serde::Deserialize<'de> for ByteVector<N> {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
@@ -89,7 +89,7 @@ impl<'de, const N: usize> serde::Deserialize<'de> for ByteVector<N> {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, SimpleSerialize)]
 pub struct ByteList<const N: usize> {
     inner: List<u8, N>,
 }
@@ -128,40 +128,40 @@ impl<const N: usize> TryFrom<&[u8]> for ByteList<N> {
     }
 }
 
-impl<const N: usize> ssz_rs::Merkleized for ByteList<N> {
-    fn hash_tree_root(&mut self) -> std::result::Result<Node, MerkleizationError> {
-        self.inner.hash_tree_root()
-    }
-}
+// impl<const N: usize> ssz_rs::Merkleized for ByteList<N> {
+//     fn hash_tree_root(&mut self) -> std::result::Result<Node, MerkleizationError> {
+//         self.inner.hash_tree_root()
+//     }
+// }
 
-impl<const N: usize> ssz_rs::Sized for ByteList<N> {
-    fn size_hint() -> usize {
-        0
-    }
+// impl<const N: usize> ssz_rs::Sized for ByteList<N> {
+//     fn size_hint() -> usize {
+//         0
+//     }
 
-    fn is_variable_size() -> bool {
-        false
-    }
-}
+//     fn is_variable_size() -> bool {
+//         false
+//     }
+// }
 
-impl<const N: usize> ssz_rs::Serialize for ByteList<N> {
-    fn serialize(&self, buffer: &mut Vec<u8>) -> std::result::Result<usize, SerializeError> {
-        self.inner.serialize(buffer)
-    }
-}
+// impl<const N: usize> ssz_rs::Serialize for ByteList<N> {
+//     fn serialize(&self, buffer: &mut Vec<u8>) -> std::result::Result<usize, SerializeError> {
+//         self.inner.serialize(buffer)
+//     }
+// }
 
-impl<const N: usize> ssz_rs::Deserialize for ByteList<N> {
-    fn deserialize(encoding: &[u8]) -> std::result::Result<Self, DeserializeError>
-    where
-        Self: std::marker::Sized,
-    {
-        Ok(Self {
-            inner: List::deserialize(encoding)?,
-        })
-    }
-}
+// impl<const N: usize> ssz_rs::Deserialize for ByteList<N> {
+//     fn deserialize(encoding: &[u8]) -> std::result::Result<Self, DeserializeError>
+//     where
+//         Self: std::marker::Sized,
+//     {
+//         Ok(Self {
+//             inner: List::deserialize(encoding)?,
+//         })
+//     }
+// }
 
-impl<const N: usize> ssz_rs::SimpleSerialize for ByteList<N> {}
+// impl<const N: usize> ssz_rs::SimpleSerialize for ByteList<N> {}
 
 impl<'de, const N: usize> serde::Deserialize<'de> for ByteList<N> {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
@@ -176,7 +176,7 @@ impl<'de, const N: usize> serde::Deserialize<'de> for ByteList<N> {
     }
 }
 
-#[derive(Debug, Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, SimpleSerialize)]
 pub struct U64 {
     inner: u64,
 }
@@ -199,40 +199,40 @@ impl From<u64> for U64 {
     }
 }
 
-impl ssz_rs::Merkleized for U64 {
-    fn hash_tree_root(&mut self) -> std::result::Result<Node, MerkleizationError> {
-        self.inner.hash_tree_root()
-    }
-}
+// impl ssz_rs::Merkleized for U64 {
+//     fn hash_tree_root(&mut self) -> std::result::Result<Node, MerkleizationError> {
+//         self.inner.hash_tree_root()
+//     }
+// }
 
-impl ssz_rs::Sized for U64 {
-    fn size_hint() -> usize {
-        0
-    }
+// impl ssz_rs::Sized for U64 {
+//     fn size_hint() -> usize {
+//         0
+//     }
 
-    fn is_variable_size() -> bool {
-        false
-    }
-}
+//     fn is_variable_size() -> bool {
+//         false
+//     }
+// }
 
-impl ssz_rs::Serialize for U64 {
-    fn serialize(&self, buffer: &mut Vec<u8>) -> std::result::Result<usize, SerializeError> {
-        self.inner.serialize(buffer)
-    }
-}
+// impl ssz_rs::Serialize for U64 {
+//     fn serialize(&self, buffer: &mut Vec<u8>) -> std::result::Result<usize, SerializeError> {
+//         self.inner.serialize(buffer)
+//     }
+// }
 
-impl ssz_rs::Deserialize for U64 {
-    fn deserialize(encoding: &[u8]) -> std::result::Result<Self, DeserializeError>
-    where
-        Self: std::marker::Sized,
-    {
-        Ok(Self {
-            inner: u64::deserialize(encoding)?,
-        })
-    }
-}
+// impl ssz_rs::Deserialize for U64 {
+//     fn deserialize(encoding: &[u8]) -> std::result::Result<Self, DeserializeError>
+//     where
+//         Self: std::marker::Sized,
+//     {
+//         Ok(Self {
+//             inner: u64::deserialize(encoding)?,
+//         })
+//     }
+// }
 
-impl ssz_rs::SimpleSerialize for U64 {}
+// impl ssz_rs::SimpleSerialize for U64 {}
 
 impl<'de> serde::Deserialize<'de> for U64 {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>

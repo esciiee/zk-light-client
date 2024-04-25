@@ -16,6 +16,13 @@ pub type BLSPubKey = ByteVector<48>;
 pub type SignatureBytes = ByteVector<96>;
 pub type Transaction = ByteList<1073741824>;
 
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
+pub struct LightClientHeader {
+    pub beacon: Header,
+    pub execution: ExecutionPayload,
+    pub execution_branch: Vector<Bytes32, 4>,
+}
+
 #[derive(serde::Deserialize, Debug, Default, SimpleSerialize, Clone)]
 pub struct BeaconBlock {
     pub slot: U64,
@@ -72,15 +79,7 @@ pub struct BlsToExecutionChange {
     to_execution_address: Address,
 }
 
-#[superstruct(
-    variants(Bellatrix, Capella, Deneb),
-    variant_attributes(
-        derive(serde::Deserialize, Debug, Default, SimpleSerialize, Clone),
-        serde(deny_unknown_fields)
-    )
-)]
-#[derive(serde::Deserialize, Debug, Clone)]
-#[serde(untagged)]
+#[derive(serde::Deserialize, Debug, Clone, Default, SimpleSerialize)]
 pub struct ExecutionPayload {
     pub parent_hash: Bytes32,
     pub fee_recipient: Address,
@@ -96,22 +95,11 @@ pub struct ExecutionPayload {
     #[serde(deserialize_with = "u256_deserialize")]
     pub base_fee_per_gas: U256,
     pub block_hash: Bytes32,
-    pub transactions: List<Transaction, 1048576>,
-    #[superstruct(only(Capella, Deneb))]
-    withdrawals: List<Withdrawal, 16>,
-    #[superstruct(only(Deneb))]
-    blob_gas_used: U64,
-    #[superstruct(only(Deneb))]
-    excess_blob_gas: U64,
+    pub transactions_root: Bytes32,
+    pub withdrawals_root: Bytes32,
+    pub blob_gas_used: U64,
+    pub excess_blob_gas: U64,
 }
-
-impl Default for ExecutionPayload {
-    fn default() -> Self {
-        ExecutionPayload::Bellatrix(ExecutionPayloadBellatrix::default())
-    }
-}
-
-superstruct_ssz!(ExecutionPayload);
 
 #[derive(Default, Clone, Debug, SimpleSerialize, serde::Deserialize)]
 pub struct Withdrawal {
@@ -212,20 +200,17 @@ pub struct Eth1Data {
 
 #[derive(serde::Deserialize, Debug, Clone)]
 pub struct Bootstrap {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub header: Header,
+    pub header: LightClientHeader,
     pub current_sync_committee: SyncCommittee,
     pub current_sync_committee_branch: Vec<Bytes32>,
 }
 
 #[derive(serde::Deserialize, Debug, Clone)]
 pub struct Update {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
+    pub attested_header: LightClientHeader,
     pub next_sync_committee: SyncCommittee,
     pub next_sync_committee_branch: Vec<Bytes32>,
-    #[serde(deserialize_with = "header_deserialize")]
-    pub finalized_header: Header,
+    pub finalized_header: LightClientHeader,
     pub finality_branch: Vec<Bytes32>,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
@@ -233,10 +218,8 @@ pub struct Update {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct FinalityUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
-    #[serde(deserialize_with = "header_deserialize")]
-    pub finalized_header: Header,
+    pub attested_header: LightClientHeader,
+    pub finalized_header: LightClientHeader,
     pub finality_branch: Vec<Bytes32>,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
@@ -244,8 +227,7 @@ pub struct FinalityUpdate {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct OptimisticUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
+    pub attested_header: LightClientHeader,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
 }
@@ -273,13 +255,12 @@ pub struct SyncAggregate {
 
 #[derive(serde::Deserialize, Clone)]
 pub struct GenericUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
+    pub attested_header: LightClientHeader,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
     pub next_sync_committee: Option<SyncCommittee>,
     pub next_sync_committee_branch: Option<Vec<Bytes32>>,
-    pub finalized_header: Option<Header>,
+    pub finalized_header: Option<LightClientHeader>,
     pub finality_branch: Option<Vec<Bytes32>>,
 }
 
