@@ -1,7 +1,5 @@
 use ssz_rs::prelude::*;
 
-use super::Header;
-
 pub fn u256_deserialize<'de, D>(deserializer: D) -> Result<U256, D::Error>
 where
     D: serde::Deserializer<'de>,
@@ -10,30 +8,6 @@ where
     let y = alloy_primitives::U256::from_str_radix(&val, 10).unwrap();
     let y_bytes = y.to_le_bytes();
     Ok(U256::from_bytes_le(y_bytes))
-}
-
-pub fn header_deserialize<'de, D>(deserializer: D) -> Result<Header, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let header: LightClientHeader = serde::Deserialize::deserialize(deserializer)?;
-
-    Ok(match header {
-        LightClientHeader::Unwrapped(header) => header,
-        LightClientHeader::Wrapped(header) => header.beacon,
-    })
-}
-
-#[derive(serde::Deserialize)]
-#[serde(untagged)]
-enum LightClientHeader {
-    Unwrapped(Header),
-    Wrapped(Beacon),
-}
-
-#[derive(serde::Deserialize)]
-struct Beacon {
-    beacon: Header,
 }
 
 macro_rules! superstruct_ssz {

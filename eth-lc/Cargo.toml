@@ -6,10 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ssz-rs.workspace = true
+ssz_rs.workspace = true
 eyre.workspace = true
 serde.workspace = true
 superstruct.workspace = true
 hex.workspace = true
 alloy-primitives.workspace = true
-

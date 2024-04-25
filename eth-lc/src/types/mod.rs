@@ -4,7 +4,7 @@ use ssz_rs::prelude::*;
 use superstruct::superstruct;
 
 use self::primitives::{ByteList, ByteVector, U64};
-use self::utils::{header_deserialize, superstruct_ssz, u256_deserialize};
+use self::utils::{superstruct_ssz, u256_deserialize};
 
 pub mod primitives;
 mod utils;
@@ -15,6 +15,38 @@ pub type LogsBloom = ByteVector<256>;
 pub type BLSPubKey = ByteVector<48>;
 pub type SignatureBytes = ByteVector<96>;
 pub type Transaction = ByteList<1073741824>;
+
+// #[superstruct(
+//     variants(Bellatrix, Capella, Deneb),
+//     variant_attributes(
+//         derive(serde::Deserialize, Clone, Debug, SimpleSerialize, Default),
+//         serde(deny_unknown_fields)
+//     )
+// )]
+// #[derive(serde::Deserialize, Debug, Clone)]
+// pub struct LightClientHeader {
+//     pub beacon: Header,
+//     #[superstruct(only(Capella, Deneb))]
+//     pub exection: ExecutionPayload,
+//     #[superstruct(only(Capella, Deneb))]
+//     pub execution_branch: Vector<Bytes32, 4>,
+// }
+// superstruct_ssz!(LightClientHeader);
+// impl Default for LightClientHeader {
+//     fn default() -> Self {
+//         LightClientHeader::Capella(LightClientHeaderCapella::default())
+//     }
+// }
+
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
+pub struct LightClientHeader {
+    pub beacon: Header,
+    pub execution: ExecutionPayload,
+    pub execution_branch: Vector<Bytes32, 4>,
+}
+
+
+
 
 #[derive(serde::Deserialize, Debug, Default, SimpleSerialize, Clone)]
 pub struct BeaconBlock {
@@ -72,15 +104,49 @@ pub struct BlsToExecutionChange {
     to_execution_address: Address,
 }
 
-#[superstruct(
-    variants(Bellatrix, Capella, Deneb),
-    variant_attributes(
-        derive(serde::Deserialize, Debug, Default, SimpleSerialize, Clone),
-        serde(deny_unknown_fields)
-    )
-)]
-#[derive(serde::Deserialize, Debug, Clone)]
-#[serde(untagged)]
+// #[superstruct(
+//     variants(Bellatrix, Capella, Deneb),
+//     variant_attributes(
+//         derive(serde::Deserialize, Debug, Default, SimpleSerialize, Clone),
+//         serde(deny_unknown_fields)
+//     )
+// )]
+// #[derive(serde::Deserialize, Debug, Clone)]
+// #[serde(untagged)]
+// pub struct ExecutionPayload {
+//     pub parent_hash: Bytes32,
+//     pub fee_recipient: Address,
+//     pub state_root: Bytes32,
+//     pub receipts_root: Bytes32,
+//     pub logs_bloom: LogsBloom,
+//     pub prev_randao: Bytes32,
+//     pub block_number: U64,
+//     pub gas_limit: U64,
+//     pub gas_used: U64,
+//     pub timestamp: U64,
+//     pub extra_data: ByteList<32>,
+//     #[serde(deserialize_with = "u256_deserialize")]
+//     pub base_fee_per_gas: U256,
+//     pub block_hash: Bytes32,
+//     pub transactions: List<Transaction, 1048576>,
+//     #[superstruct(only(Capella, Deneb))]
+//     withdrawals: List<Withdrawal, 16>,
+//     #[superstruct(only(Deneb))]
+//     blob_gas_used: U64,
+//     #[superstruct(only(Deneb))]
+//     excess_blob_gas: U64,
+// }
+
+// impl Default for ExecutionPayload {
+//     fn default() -> Self {
+//         ExecutionPayload::Bellatrix(ExecutionPayloadBellatrix::default())
+//     }
+// }
+
+// superstruct_ssz!(ExecutionPayload);
+
+
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
 pub struct ExecutionPayload {
     pub parent_hash: Bytes32,
     pub fee_recipient: Address,
@@ -96,22 +162,14 @@ pub struct ExecutionPayload {
     #[serde(deserialize_with = "u256_deserialize")]
     pub base_fee_per_gas: U256,
     pub block_hash: Bytes32,
-    pub transactions: List<Transaction, 1048576>,
-    #[superstruct(only(Capella, Deneb))]
-    withdrawals: List<Withdrawal, 16>,
-    #[superstruct(only(Deneb))]
+    pub transactions_root: Bytes32,
+    withdrawals_root: Bytes32,
     blob_gas_used: U64,
-    #[superstruct(only(Deneb))]
     excess_blob_gas: U64,
 }
 
-impl Default for ExecutionPayload {
-    fn default() -> Self {
-        ExecutionPayload::Bellatrix(ExecutionPayloadBellatrix::default())
-    }
-}
 
-superstruct_ssz!(ExecutionPayload);
+
 
 #[derive(Default, Clone, Debug, SimpleSerialize, serde::Deserialize)]
 pub struct Withdrawal {
@@ -210,22 +268,19 @@ pub struct Eth1Data {
     block_hash: Bytes32,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
 pub struct Bootstrap {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub header: Header,
+    pub header: LightClientHeader,
     pub current_sync_committee: SyncCommittee,
-    pub current_sync_committee_branch: Vec<Bytes32>,
+    pub current_sync_committee_branch: Vector<Bytes32, 5>,
 }
 
 #[derive(serde::Deserialize, Debug, Clone)]
 pub struct Update {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
+    pub attested_header: LightClientHeader,
     pub next_sync_committee: SyncCommittee,
     pub next_sync_committee_branch: Vec<Bytes32>,
-    #[serde(deserialize_with = "header_deserialize")]
-    pub finalized_header: Header,
+    pub finalized_header: LightClientHeader,
     pub finality_branch: Vec<Bytes32>,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
@@ -233,10 +288,8 @@ pub struct Update {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct FinalityUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
-    #[serde(deserialize_with = "header_deserialize")]
-    pub finalized_header: Header,
+    pub attested_header: LightClientHeader,
+    pub finalized_header: LightClientHeader,
     pub finality_branch: Vec<Bytes32>,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
@@ -244,20 +297,21 @@ pub struct FinalityUpdate {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct OptimisticUpdate {
-    #[serde(deserialize_with = "header_deserialize")]
-    pub attested_header: Header,
+    pub attested_header: LightClientHeader,
     pub sync_aggregate: SyncAggregate,
     pub signature_slot: U64,
 }
 
 #[derive(serde::Deserialize, Debug, Clone, Default, SimpleSerialize)]
 pub struct Header {
-    pub slot: U64,
-    pub proposer_index: U64,
+    pub slot: u64,
+    pub proposer_index: u64,
     pub parent_root: Bytes32,
     pub state_root: Bytes32,
     pub body_root: Bytes32,
 }
+
+// implement from string for u64
 
 #[derive(Debug, Clone, Default, SimpleSerialize, serde::Deserialize)]
 pub struct SyncCommittee {
@@ -271,13 +325,14 @@ pub struct SyncAggregate {
     pub sync_committee_signature: SignatureBytes,
 }
 
+#[derive(serde::Deserialize, Clone)]
 pub struct GenericUpdate {
-    pub attested_header: Header,
+    pub attested_header: LightClientHeader,
     pub sync_aggregate: SyncAggregate,
-    pub signature_slot: u64,
+    pub signature_slot: U64,
     pub next_sync_committee: Option<SyncCommittee>,
     pub next_sync_committee_branch: Option<Vec<Bytes32>>,
-    pub finalized_header: Option<Header>,
+    pub finalized_header: Option<LightClientHeader>,
     pub finality_branch: Option<Vec<Bytes32>>,
 }
 
