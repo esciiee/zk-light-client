@@ -176,7 +176,7 @@ impl<'de, const N: usize> serde::Deserialize<'de> for ByteList<N> {
     }
 }
 
-#[derive(Debug, Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, Default, PartialEq, Eq, PartialOrd, Ord, SimpleSerialize)]
 pub struct U64 {
     inner: u64,
 }

@@ -1,7 +1,5 @@
 use ssz_rs::prelude::*;
 
-use super::Header;
-
 pub fn u256_deserialize<'de, D>(deserializer: D) -> Result<U256, D::Error>
 where
     D: serde::Deserializer<'de>,

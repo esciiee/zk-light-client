@@ -7,8 +7,8 @@
                 "slot": "8905792",
                 "proposer_index": "822011",
                 "parent_root": "0x4aa8819119e09b8d297a7d62ce5dfaad02cff322be48049c87baedff3b4b0a7b",
-                "state_root": "0xff23131922797a780517ede913a83c5ea16c7cb0506899c4443b1bc066443a47",
-                "body_root": "0x120877fab78db070f6d76d914b78114d723bea8dc015a896062d5a5cc10b0987"
+                "state_root":  "0xff23131922797a780517ede913a83c5ea16c7cb0506899c4443b1bc066443a47",
+                "body_root":   "0x120877fab78db070f6d76d914b78114d723bea8dc015a896062d5a5cc10b0987"
             },
             "execution": {
                 "parent_hash": "0x6489f1db0ed834bfa2df7c724587dc3d0ad2756697c07d6fa8683ecb88f09c37",

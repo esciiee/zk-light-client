@@ -18,6 +18,6 @@ eyre = "0.6.8"
 hex = "0.4.3"
 superstruct = "0.7.0"
 serde = { version = "1.0.154", features = ["derive"] }
-ssz-rs = { package = "ssz_rs", version = "0.9.0" }
+ssz_rs = { package = "ssz_rs", version = "0.9.0" }
 ssz_types = { package = "ssz_types", version = "0.6.0" }
 alloy-primitives = "0.7.0"
