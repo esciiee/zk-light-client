@@ -4,7 +4,7 @@ use ssz_rs::prelude::*;
 use superstruct::superstruct;
 
 use self::primitives::{ByteList, ByteVector, U64};
-use self::utils::{header_deserialize, superstruct_ssz, u256_deserialize};
+use self::utils::{superstruct_ssz, u256_deserialize};
 
 pub mod primitives;
 mod utils;
@@ -198,11 +198,11 @@ pub struct Eth1Data {
     block_hash: Bytes32,
 }
 
-#[derive(serde::Deserialize, Debug, Clone)]
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
 pub struct Bootstrap {
     pub header: LightClientHeader,
     pub current_sync_committee: SyncCommittee,
-    pub current_sync_committee_branch: Vec<Bytes32>,
+    pub current_sync_committee_branch: Vector<Bytes32, 5>,
 }
 
 #[derive(serde::Deserialize, Debug, Clone)]

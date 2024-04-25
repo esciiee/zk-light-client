@@ -4,7 +4,7 @@ use crate::types::*;
 
 pub mod types;
 
-#[derive(Debug, Default, SimpleSerialize)]
+#[derive(serde::Deserialize, Debug, Clone, SimpleSerialize, Default)]
 pub struct LightClientStore {
     pub finalized_header: LightClientHeader,
     pub current_sync_committee: SyncCommittee,
